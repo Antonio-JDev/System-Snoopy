@@ -1,0 +1,277 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// TABELA DE INSUMOS
+// ============================================
+model Ingredient {
+  id                String   @id @default(uuid())
+  name              String   @unique
+  unit              String   // Ex: "kg", "unidade", "litro"
+  currentStock      Decimal  @default(0) @db.Decimal(10, 2)
+  minStock          Decimal  @default(0) @db.Decimal(10, 2) // Estoque mínimo para alerta
+  averageCost       Decimal  @default(0) @db.Decimal(10, 2) // Custo médio
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relacionamentos
+  productIngredients ProductIngredient[]
+  stockMovements     StockMovement[]
+
+  @@map("ingredients")
+}
+
+// ============================================
+// TABELA DE PRODUTOS
+// ============================================
+model Product {
+  id                String   @id @default(uuid())
+  name              String   @unique
+  description       String?
+  price             Decimal  @db.Decimal(10, 2)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relacionamentos
+  productIngredients ProductIngredient[]
+  orderItems         OrderItem[]
+
+  @@map("products")
+}
+
+// ============================================
+// FICHA TÉCNICA (Relacionamento Produto x Insumo)
+// ============================================
+model ProductIngredient {
+  id            String   @id @default(uuid())
+  productId     String
+  ingredientId  String
+  quantity      Decimal  @db.Decimal(10, 2) // Quantidade do insumo necessária para o produto
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relacionamentos
+  product     Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  ingredient  Ingredient @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, ingredientId])
+  @@map("product_ingredients")
+}
+
+// ============================================
+// TABELA DE MOTOBOYS
+// ============================================
+model DeliveryDriver {
+  id            String          @id @default(uuid())
+  name          String
+  phone         String          @unique
+  email         String?         @unique
+  status        DriverStatus    @default(AVAILABLE) // Disponível ou Em Rota
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Relacionamentos
+  orders        Order[]
+  queueEntries  DeliveryQueue[]
+
+  @@map("delivery_drivers")
+}
+
+enum DriverStatus {
+  AVAILABLE  // Disponível
+  ON_ROUTE   // Em Rota
+  OFF_DUTY   // Fora de Serviço
+}
+
+// ============================================
+// FILA DE MOTOBOYS (FIFO)
+// ============================================
+model DeliveryQueue {
+  id            String          @id @default(uuid())
+  driverId      String
+  position      Int             // Posição na fila (1 = primeiro, 2 = segundo, etc.)
+  status        QueueStatus     @default(WAITING) // Aguardando, Em Entrega, Finalizado
+  checkedInAt   DateTime        @default(now()) // Quando o motoboy fez check-in
+  assignedAt    DateTime?       // Quando foi atribuído um pedido
+  completedAt   DateTime?       // Quando finalizou a entrega
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Relacionamentos
+  driver        DeliveryDriver  @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  order         Order?
+
+  @@unique([driverId, status])
+  @@index([status, position])
+  @@map("delivery_queue")
+}
+
+enum QueueStatus {
+  WAITING     // Aguardando na fila
+  IN_DELIVERY // Em entrega
+  COMPLETED   // Finalizado
+}
+
+// ============================================
+// TABELA DE PEDIDOS
+// ============================================
+model Order {
+  id                String          @id @default(uuid())
+  // IDs das plataformas externas
+  ifoodId           String?         @unique // ID do pedido no iFood
+  anotaAiId         String?         @unique // ID do pedido no Anota.ai
+  platform          OrderPlatform   // Origem do pedido
+  // Informações do pedido
+  customerName      String
+  customerPhone     String
+  customerAddress   String
+  deliveryLatitude  Decimal?        @db.Decimal(10, 8)
+  deliveryLongitude Decimal?        @db.Decimal(10, 8)
+  // Status e controle
+  status            OrderStatus     @default(CONFIRMED)
+  totalAmount       Decimal         @db.Decimal(10, 2)
+  deliveryFee       Decimal         @default(0) @db.Decimal(10, 2)
+  // Relacionamentos
+  driverId          String?
+  queueEntryId      String?         @unique
+  // Timestamps
+  confirmedAt       DateTime        @default(now())
+  preparingAt       DateTime?
+  outForDeliveryAt  DateTime?
+  deliveredAt       DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relacionamentos
+  driver            DeliveryDriver? @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  queueEntry        DeliveryQueue? @relation(fields: [queueEntryId], references: [id], onDelete: SetNull)
+  items             OrderItem[]
+  financialTransaction FinancialTransaction?
+
+  @@index([status])
+  @@index([platform])
+  @@index([ifoodId])
+  @@index([anotaAiId])
+  @@map("orders")
+}
+
+enum OrderPlatform {
+  IFOOD
+  ANOTA_AI
+  MANUAL // Pedidos inseridos manualmente
+}
+
+enum OrderStatus {
+  CONFIRMED         // Confirmado
+  PREPARING         // Preparando
+  READY             // Pronto
+  OUT_FOR_DELIVERY  // Saiu para Entrega
+  DELIVERED         // Entregue
+  CANCELLED         // Cancelado
+}
+
+// ============================================
+// ITENS DO PEDIDO
+// ============================================
+model OrderItem {
+  id            String   @id @default(uuid())
+  orderId       String
+  productId     String
+  quantity      Int      @default(1)
+  unitPrice     Decimal  @db.Decimal(10, 2)
+  subtotal      Decimal  @db.Decimal(10, 2)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relacionamentos
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@map("order_items")
+}
+
+// ============================================
+// MOVIMENTAÇÕES DE ESTOQUE
+// ============================================
+model StockMovement {
+  id            String            @id @default(uuid())
+  ingredientId  String
+  type          StockMovementType
+  quantity      Decimal           @db.Decimal(10, 2) // Positivo para entrada, negativo para saída
+  unitCost      Decimal?          @db.Decimal(10, 2) // Custo unitário (para entradas)
+  reason        String?           // Motivo da movimentação
+  orderId       String?           // Se foi baixa automática de um pedido
+  createdAt     DateTime          @default(now())
+
+  // Relacionamentos
+  ingredient    Ingredient        @relation(fields: [ingredientId], references: [id], onDelete: Cascade)
+
+  @@index([ingredientId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("stock_movements")
+}
+
+enum StockMovementType {
+  PURCHASE      // Compra/Entrada
+  SALE          // Venda/Baixa automática
+  ADJUSTMENT    // Ajuste manual
+  LOSS          // Perda/Dano
+}
+
+// ============================================
+// TRANSAÇÕES FINANCEIRAS
+// ============================================
+model FinancialTransaction {
+  id            String                    @id @default(uuid())
+  orderId       String?                   @unique
+  type          FinancialTransactionType
+  category      FinancialCategory
+  amount        Decimal                   @db.Decimal(10, 2)
+  description   String?
+  paymentMethod PaymentMethod?
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+
+  // Relacionamentos
+  order         Order?                    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([type])
+  @@index([category])
+  @@index([createdAt])
+  @@map("financial_transactions")
+}
+
+enum FinancialTransactionType {
+  INCOME   // Entrada (Vendas)
+  EXPENSE  // Saída (Compras, Pagamento Motoboy, etc.)
+}
+
+enum FinancialCategory {
+  SALE              // Venda de produtos
+  DELIVERY_FEE      // Taxa de entrega
+  DRIVER_PAYMENT    // Pagamento de motoboy
+  INGREDIENT_PURCHASE // Compra de insumos
+  OPERATIONAL       // Despesas operacionais
+  OTHER             // Outros
+}
+
+enum PaymentMethod {
+  CASH           // Dinheiro
+  CREDIT_CARD    // Cartão de Crédito
+  DEBIT_CARD     // Cartão de Débito
+  PIX            // PIX
+  IFOOD          // Pagamento via iFood
+  ANOTA_AI       // Pagamento via Anota.ai
+}

@@ -1,0 +1,49 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    // File Layout
+    // "rootDir": "./src",
+    // "outDir": "./dist",
+
+    // Environment Settings
+    // See also https://aka.ms/tsconfig/module
+    "module": "nodenext",
+    "target": "esnext",
+    "types": [],
+    // For nodejs:
+    // "lib": ["esnext"],
+    // "types": ["node"],
+    // and npm install -D @types/node
+
+    // Other Outputs
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    // Stricter Typechecking Options
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    // Style Options
+    // "noImplicitReturns": true,
+    // "noImplicitOverride": true,
+    // "noUnusedLocals": true,
+    // "noUnusedParameters": true,
+    // "noFallthroughCasesInSwitch": true,
+    // "noPropertyAccessFromIndexSignature": true,
+
+    // Recommended Options
+    "strict": true,
+    "jsx": "react-jsx",
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    // "noUncheckedSideEffectImports": true,
+    // Opção do compilador 'noUncheckedSideEffectImports' desconhecida.
+    // O TypeScript atualmente NÃO possui uma opção chamada "noUncheckedSideEffectImports".
+    // Se você ativar isso, verá um erro: "Opção do compilador 'noUncheckedSideEffectImports' desconhecida."
+    // Talvez você tenha confundido com alguma configuração experimental ou de verificação de imports. 
+    // Remova esta linha para evitar erro.
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+  }
+}
