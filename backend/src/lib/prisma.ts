@@ -1,24 +1,33 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 
-// Singleton do PrismaClient para evitar múltiplas instâncias
-let prisma: PrismaClient | null = null;
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+
+// Função para manter compatibilidade com código existente
 export function getPrismaClient(): PrismaClient {
-  if (!prisma) {
-    // Garantir que DATABASE_URL está definida
-    if (!process.env.DATABASE_URL) {
-      throw new Error('DATABASE_URL não está definida no arquivo .env');
-    }
-    
-    prisma = new PrismaClient({
-      log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-    });
-  }
   return prisma;
 }
 
-// Exporta a função para obter a instância (lazy initialization)
-// Não inicializa no nível do módulo para evitar problemas com ESM
-export default getPrismaClient;
+// Função para testar a conexão com o banco de dados
+export async function testDatabaseConnection(): Promise<boolean> {
+  try {
+    await prisma.$connect();
+    console.log('✅ Conexão com o banco de dados estabelecida');
+    return true;
+  } catch (error: any) {
+    console.error('❌ Erro ao conectar com o banco de dados:');
+    console.error('   Mensagem:', error?.message);
+    console.error('   Stack:', error?.stack);
+    return false;
+  }
+}
 
+export default prisma;

@@ -1,19 +1,24 @@
 import { type User } from '@prisma/client';
-import getPrismaClient from '../lib/prisma.js';
-
-// Lazy initialization - só cria quando necessário
-const getPrisma = () => getPrismaClient();
+import { prisma } from '../lib/prisma.js';
 
 export class UserRepository {
   async findByEmail(email: string): Promise<User | null> {
-    const prisma = getPrisma();
-    return prisma.user.findUnique({
-      where: { email },
-    });
+    try {
+      console.log('📦 Obtendo PrismaClient...');
+      console.log('✅ PrismaClient obtido, buscando usuário:', email);
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
+      console.log('📊 Resultado da busca:', user ? 'Usuário encontrado' : 'Usuário não encontrado');
+      return user;
+    } catch (error: any) {
+      console.error('❌ Erro no UserRepository.findByEmail:', error);
+      console.error('❌ Stack:', error.stack);
+      throw error;
+    }
   }
 
   async findById(id: string): Promise<User | null> {
-    const prisma = getPrisma();
     return prisma.user.findUnique({
       where: { id },
     });
@@ -25,7 +30,6 @@ export class UserRepository {
     password: string;
     role: 'ADMIN' | 'ATTENDANT' | 'DRIVER';
   }): Promise<User> {
-    const prisma = getPrisma();
     return prisma.user.create({
       data,
     });
