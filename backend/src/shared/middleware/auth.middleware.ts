@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../errors/AppError';
-import { JWTService } from '../services/jwt.service';
-import { JWTPayload } from '../types/jwt.types';
+import { type Request, type Response, type NextFunction } from 'express';
+import { AppError } from '../errors/AppError.js';
+import { JWTService } from '../services/jwt.service.js';
+import { type JWTPayload } from '../types/jwt.types.js';
 
 // Estende o tipo Request para incluir o usuário autenticado
 declare global {

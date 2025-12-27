@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import express, { Request, Response } from 'express';
+import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-
-import { errorHandler } from './shared/middleware/errorHandler';
+import authRoutes from './http/routes/auth.routes.js';
+import { errorHandler } from './shared/middleware/errorHandler.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -23,8 +23,9 @@ app.get('/health', (req: Request, res: Response) => {
   });
 });
 
-// Suas rotas virão aqui...
-// app.use('/api/auth', authRoutes);
+// Rotas
+
+app.use('/api/auth', authRoutes);
 // app.use('/api/orders', orderRoutes);
 
 // O Error Handler sempre por último!
