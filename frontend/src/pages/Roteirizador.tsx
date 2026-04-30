@@ -124,15 +124,15 @@ const mockOrders: Order[] = [
 ];
 
 const statusConfig = {
-  CONFIRMED: { label: 'Confirmado', color: 'bg-blue-100 text-blue-800', icon: AlertCircle },
-  PREPARING: { label: 'Preparando', color: 'bg-yellow-100 text-yellow-800', icon: Package },
-  READY: { label: 'Pronto', color: 'bg-green-100 text-green-800', icon: CheckCircle2 },
-  OUT_FOR_DELIVERY: { label: 'Saiu para Entrega', color: 'bg-purple-100 text-purple-800', icon: Truck },
+  CONFIRMED: { label: 'Confirmado', color: 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border border-blue-300/50', icon: AlertCircle },
+  PREPARING: { label: 'Preparando', color: 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800 border border-yellow-300/50', icon: Package },
+  READY: { label: 'Pronto', color: 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300/50', icon: CheckCircle2 },
+  OUT_FOR_DELIVERY: { label: 'Saiu para Entrega', color: 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800 border border-purple-300/50', icon: Truck },
 };
 
 const platformConfig = {
-  IFOOD: { label: 'iFood', color: 'bg-red-100 text-red-800' },
-  ANOTA_AI: { label: 'Anota.AI', color: 'bg-orange-100 text-orange-800' },
+  IFOOD: { label: 'iFood', color: 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 border border-red-300/50' },
+  ANOTA_AI: { label: 'Anota.AI', color: 'bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800 border border-orange-300/50' },
 };
 
 export function Roteirizador() {
@@ -154,21 +154,23 @@ export function Roteirizador() {
   const inDeliveryOrders = mockOrders.filter(o => o.status === 'OUT_FOR_DELIVERY');
 
   return (
-    <div className="p-6 ml-20 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50 p-6 ml-20 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Roteirizador de Entregas</h1>
-          <p className="text-muted-foreground mt-1">
-            Gerencie e otimize as rotas de entrega
+      <div className="flex items-center justify-between mb-8">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+            Roteirizador de Entregas
+          </h1>
+          <p className="text-muted-foreground text-base">
+            Gerencie e otimize as rotas de entrega de forma eficiente
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2 shadow-md hover:shadow-lg transition-all duration-200">
             <Zap size={18} />
             Otimizar Rotas
           </Button>
-          <Button className="gap-2 bg-primary">
+          <Button className="gap-2 shadow-lg hover:shadow-xl transition-all duration-200 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
             <Route size={18} />
             Criar Rota
           </Button>
@@ -176,58 +178,58 @@ export function Roteirizador() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-green-50/30 hover:shadow-xl transition-all duration-300">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Prontos</p>
-                <p className="text-2xl font-bold text-green-600">{readyOrders.length}</p>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">Prontos</p>
+                <p className="text-3xl font-bold text-green-600">{readyOrders.length}</p>
               </div>
-              <div className="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
-                <CheckCircle2 className="text-green-600" size={24} />
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-green-100 to-green-200/50 flex items-center justify-center">
+                <CheckCircle2 className="text-green-600" size={28} />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-yellow-50/30 hover:shadow-xl transition-all duration-300">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Preparando</p>
-                <p className="text-2xl font-bold text-yellow-600">{preparingOrders.length}</p>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">Preparando</p>
+                <p className="text-3xl font-bold text-yellow-600">{preparingOrders.length}</p>
               </div>
-              <div className="w-12 h-12 rounded-lg bg-yellow-100 flex items-center justify-center">
-                <Package className="text-yellow-600" size={24} />
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-yellow-100 to-yellow-200/50 flex items-center justify-center">
+                <Package className="text-yellow-600" size={28} />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-blue-50/30 hover:shadow-xl transition-all duration-300">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Confirmados</p>
-                <p className="text-2xl font-bold text-blue-600">{confirmedOrders.length}</p>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">Confirmados</p>
+                <p className="text-3xl font-bold text-blue-600">{confirmedOrders.length}</p>
               </div>
-              <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
-                <AlertCircle className="text-blue-600" size={24} />
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200/50 flex items-center justify-center">
+                <AlertCircle className="text-blue-600" size={28} />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-white to-purple-50/30 hover:shadow-xl transition-all duration-300">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Em Entrega</p>
-                <p className="text-2xl font-bold text-purple-600">{inDeliveryOrders.length}</p>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">Em Entrega</p>
+                <p className="text-3xl font-bold text-purple-600">{inDeliveryOrders.length}</p>
               </div>
-              <div className="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
-                <Truck className="text-purple-600" size={24} />
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200/50 flex items-center justify-center">
+                <Truck className="text-purple-600" size={28} />
               </div>
             </div>
           </CardContent>
@@ -238,38 +240,39 @@ export function Roteirizador() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Orders List */}
         <div className="lg:col-span-1 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Pedidos Pendentes</CardTitle>
-              <CardDescription>
+          <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+            <CardHeader className="pb-4 border-b bg-gradient-to-r from-gray-50 to-white">
+              <CardTitle className="text-xl font-bold text-gray-900">Pedidos Pendentes</CardTitle>
+              <CardDescription className="text-base mt-1">
                 {mockOrders.length} pedidos aguardando roteirização
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <div className="max-h-[600px] overflow-y-auto">
-                {mockOrders.map((order) => {
+                {mockOrders.map((order, index) => {
                   const StatusIcon = statusConfig[order.status].icon;
                   return (
                     <div
                       key={order.id}
                       onClick={() => handleOrderSelect(order)}
-                      className={`p-4 border-b cursor-pointer transition-colors ${
+                      className={`p-5 border-b cursor-pointer transition-all duration-200 ${
                         selectedOrder?.id === order.id
-                          ? 'bg-primary/10 border-primary'
-                          : 'hover:bg-gray-50'
+                          ? 'bg-gradient-to-r from-primary/10 to-accent/10 border-l-4 border-l-primary shadow-sm'
+                          : 'hover:bg-gray-50/50 border-l-4 border-l-transparent'
                       }`}
+                      style={{ animationDelay: `${index * 50}ms` }}
                     >
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <Badge className={platformConfig[order.platform].color}>
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge className={`${platformConfig[order.platform].color} shadow-sm font-semibold`}>
                             {platformConfig[order.platform].label}
                           </Badge>
-                          <Badge className={statusConfig[order.status].color}>
+                          <Badge className={`${statusConfig[order.status].color} shadow-sm font-semibold`}>
                             <StatusIcon size={12} className="mr-1" />
                             {statusConfig[order.status].label}
                           </Badge>
                         </div>
-                        <span className="text-sm font-semibold text-primary">
+                        <span className="text-base font-bold text-primary bg-primary/10 px-3 py-1 rounded-lg">
                           R$ {order.totalAmount.toFixed(2)}
                         </span>
                       </div>
@@ -319,15 +322,15 @@ export function Roteirizador() {
         {/* Map and Order Details */}
         <div className="lg:col-span-2 space-y-6">
           {/* Google Maps */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Mapa de Entregas</CardTitle>
-              <CardDescription>
+          <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+            <CardHeader className="pb-4 border-b bg-gradient-to-r from-gray-50 to-white">
+              <CardTitle className="text-xl font-bold text-gray-900">Mapa de Entregas</CardTitle>
+              <CardDescription className="text-base mt-1">
                 Visualize a localização dos pedidos no mapa
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-[400px] rounded-lg overflow-hidden border bg-gray-100 relative">
+              <div className="h-[400px] rounded-xl overflow-hidden border-2 border-gray-200 shadow-inner bg-gray-100 relative">
                 {/* Placeholder do Google Maps - Substitua pela integração real */}
                 <iframe
                   width="100%"
@@ -357,24 +360,24 @@ export function Roteirizador() {
 
           {/* Order Details */}
           {selectedOrder && (
-            <Card>
-              <CardHeader>
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+              <CardHeader className="pb-4 border-b bg-gradient-to-r from-gray-50 to-white">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>Detalhes do Pedido</CardTitle>
-                    <CardDescription>Pedido #{selectedOrder.id}</CardDescription>
+                    <CardTitle className="text-xl font-bold text-gray-900">Detalhes do Pedido</CardTitle>
+                    <CardDescription className="text-base mt-1">Pedido #{selectedOrder.id}</CardDescription>
                   </div>
                   <div className="flex gap-2">
-                    <Badge className={platformConfig[selectedOrder.platform].color}>
+                    <Badge className={`${platformConfig[selectedOrder.platform].color} shadow-sm font-semibold`}>
                       {platformConfig[selectedOrder.platform].label}
                     </Badge>
-                    <Badge className={statusConfig[selectedOrder.status].color}>
+                    <Badge className={`${statusConfig[selectedOrder.status].color} shadow-sm font-semibold`}>
                       {statusConfig[selectedOrder.status].label}
                     </Badge>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-5 p-6">
                 {/* Customer Info */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -413,11 +416,11 @@ export function Roteirizador() {
 
                 {/* Items */}
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Itens do Pedido</p>
+                  <p className="text-sm font-semibold text-gray-700 mb-3">Itens do Pedido</p>
                   <div className="space-y-2">
                     {selectedOrder.items.map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span className="text-sm">{item.quantity}x {item.name}</span>
+                      <div key={idx} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-lg border border-gray-200">
+                        <span className="text-sm font-medium text-gray-900">{item.quantity}x {item.name}</span>
                       </div>
                     ))}
                   </div>
@@ -441,10 +444,10 @@ export function Roteirizador() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2 pt-4 border-t">
+                <div className="flex gap-3 pt-4 border-t">
                   <Button 
                     variant="outline" 
-                    className="flex-1"
+                    className="flex-1 h-11 shadow-md hover:shadow-lg transition-all"
                     onClick={() => window.open(`tel:${selectedOrder.customerPhone}`, '_self')}
                   >
                     <Phone size={18} className="mr-2" />
@@ -452,14 +455,14 @@ export function Roteirizador() {
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="flex-1"
+                    className="flex-1 h-11 shadow-md hover:shadow-lg transition-all"
                     onClick={() => window.open(getGoogleMapsUrl(selectedOrder.latitude, selectedOrder.longitude), '_blank')}
                   >
                     <MapPin size={18} className="mr-2" />
                     Navegar
                   </Button>
                   {selectedOrder.status === 'READY' && (
-                    <Button className="flex-1 bg-primary">
+                    <Button className="flex-1 h-11 shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
                       <Truck size={18} className="mr-2" />
                       Atribuir Motoboy
                     </Button>

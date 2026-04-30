@@ -3,6 +3,7 @@ import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import authRoutes from './http/routes/auth.routes.js';
+import ingredientRoutes from './http/routes/ingredient.routes.js';
 import { errorHandler } from './shared/middleware/errorHandler.js';
 import { testDatabaseConnection } from './lib/prisma.js';
 
@@ -43,6 +44,7 @@ app.use((req, res, next) => {
 
 // Rotas
 app.use('/api/auth', authRoutes);
+app.use('/api/ingredients', ingredientRoutes);
 
 // Middleware para capturar erros de rotas não encontradas
 app.use((req, res, next) => {
